@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <title>The Swedishinator</title>
   <style>
+    /* make sizing predictable so padding doesn't add unexpected scrollbars */
+    *, *::before, *::after { box-sizing: border-box; }
+
     html {
       margin: 0;
       padding: 0;
@@ -11,6 +14,7 @@
       /* subtle dark gradient as a safe fallback when the image is missing */
       background: linear-gradient(135deg, #071026 0%, #0b1230 100%);
       color-scheme: dark;
+      height: 100%;
     }
     /* Use an actual DOM image for the blurred background (more reliable on mobile)
        and disable the old pseudo-element to avoid rendering glitches. */
@@ -23,6 +27,7 @@
       pointer-events: none;
       overflow: hidden;
       display: block;
+      background: transparent;
     }
     /* Fallback styling applied when the image fails to load */
     .bg-wrap.bg-fallback {
@@ -30,11 +35,13 @@
     }
     .bg-wrap .bg-img {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100vmax;
-      height: 100vmax;
-      transform: translate(-50%, -50%) scale(1.06);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      transform: scale(1.06);
       object-fit: cover;
       object-position: center center;
       -webkit-user-drag: none;
@@ -42,15 +49,18 @@
       filter: blur(60px);
       will-change: transform, filter;
       backface-visibility: hidden;
+      display: block;
     }
 
     /* Mobile: disable fixed attachment (causes issues), and slightly scale the background so
        the blurred image fills the viewport without changing aspect ratio */
     @media (max-width: 768px) {
       .bg-wrap .bg-img {
-        transform: translate(-50%, -50%) scale(1.18);
+        transform: scale(1.18);
         filter: blur(66px);
       }
+      /* ensure the viewport fits the page without accidental scrollbars */
+      body { padding-top: 18px; padding-bottom: 18px; }
     }
     body {
       font-family: 'Inter', sans-serif;
@@ -59,6 +69,8 @@
       color: #212529;
       min-height: 100vh;
       position: relative;
+      height: 100%;
+      background-clip: padding-box;
     }
     h1 {
       text-align: center;
