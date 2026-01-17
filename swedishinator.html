@@ -8,32 +8,48 @@
       margin: 0;
       padding: 0;
       position: relative;
-      background-color: black;
+      /* subtle dark gradient as a safe fallback when the image is missing */
+      background: linear-gradient(135deg, #071026 0%, #0b1230 100%);
+      color-scheme: dark;
     }
-    html::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('felix-rottmann-ADGPyb9jJKE-unsplash.jpg') no-repeat center center fixed;
-      background-size: cover;
-      filter: blur(60px);
+    /* Use an actual DOM image for the blurred background (more reliable on mobile)
+       and disable the old pseudo-element to avoid rendering glitches. */
+    html::before { display: none; }
+
+    .bg-wrap {
+      position: fixed;
+      inset: 0;
       z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+      display: block;
+    }
+    /* Fallback styling applied when the image fails to load */
+    .bg-wrap.bg-fallback {
+      background: linear-gradient(135deg, #0a1628 0%, #06111f 100%);
+    }
+    .bg-wrap .bg-img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vmax;
+      height: 100vmax;
+      transform: translate(-50%, -50%) scale(1.06);
+      object-fit: cover;
+      object-position: center center;
+      -webkit-user-drag: none;
+      user-select: none;
+      filter: blur(60px);
+      will-change: transform, filter;
+      backface-visibility: hidden;
     }
 
     /* Mobile: disable fixed attachment (causes issues), and slightly scale the background so
        the blurred image fills the viewport without changing aspect ratio */
     @media (max-width: 768px) {
-      html::before {
-        background-attachment: scroll;
-        background-position: center center;
-        background-size: cover;
-        transform-origin: center center;
-        transform: scale(1.16);
+      .bg-wrap .bg-img {
+        transform: translate(-50%, -50%) scale(1.18);
         filter: blur(66px);
-        will-change: transform;
       }
     }
     body {
@@ -434,6 +450,9 @@
   </style>
 </head>
 <body>
+  <div class="bg-wrap" aria-hidden="true">
+    <img class="bg-img" src="felix-rottmann-ADGPyb9jJKE-unsplash.jpg" alt="" loading="eager" decoding="async" onerror="this.style.display='none';this.parentElement.classList.add('bg-fallback')" />
+  </div>
   <h1>The Swedishinator</h1>
   <div id="input-container">
     <button id="refresh-btn" class="refresh-btn" title="Random topic" aria-label="Random topic">
