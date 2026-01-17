@@ -1,0 +1,749 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>The Swedishinator</title>
+  <style>
+    html {
+      margin: 0;
+      padding: 0;
+      position: relative;
+      background-color: black;
+    }
+    html::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('felix-rottmann-ADGPyb9jJKE-unsplash.jpg') no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(60px);
+      z-index: -1;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #212529;
+      min-height: 100vh;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1;
+    }
+    #input-container {
+      text-align: center;
+      margin-bottom: 40px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
+    }
+    #topic {
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      width: 300px;
+      margin-right: 15px;
+      outline: none;
+      background: rgba(0, 0, 0, 0.1);
+      color: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #topic::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    #topic:focus {
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+    }
+    .style-options {
+      margin-top: 20px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      align-items: center;
+      font-size: 14px;
+      width: 100%;
+    }
+    .style-options label {
+      cursor: pointer;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .style-options .other-tone {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .style-options .other-tone input[type="text"] {
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.02);
+      color: #fff;
+      outline: none;
+      width: 220px;
+      font-weight: 300;
+    }
+    .style-options .other-tone input[type="text"]:disabled {
+      opacity: 0.5;
+    }
+    .style-options input[type="radio"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.03);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.02);
+      display: inline-block;
+      vertical-align: middle;
+      transition: all 0.18s ease;
+    }
+    .style-options input[type="radio"]:hover {
+      border-color: rgba(255,255,255,0.45);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.45), 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .style-options input[type="radio"]:checked {
+      border-color: rgba(255,255,255,0.95);
+      background: radial-gradient(circle at center, rgba(255,255,255,0.95) 35%, rgba(255,255,255,0.02) 36%);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.06);
+    }
+    #btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #btn:hover {
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    #btn:active {
+      transform: translateY(1px);
+    }
+    #content {
+      display: none;
+      height: calc(100vh - 200px);
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(15px);
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .loading {
+      text-align: center;
+      font-size: 1.5em;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 50px;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top: 3px solid rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .columns {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .row .paragraph {
+      flex: 1;
+    }
+    .column {
+      flex: 1;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .column h2 {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    }
+    .paragraph {
+      margin-bottom: 20px;
+      line-height: 1.6;
+      font-size: 1em;
+      text-align: justify;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+      color: #fff;
+    }
+    .sentence {
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .sentence.highlight {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+    }
+    .word {
+      opacity: 0;
+      display: inline-block;
+      margin-right: 4px;
+      color: #fff;
+      transform-origin: center center;
+      vertical-align: middle;
+      will-change: transform;
+      transition: opacity 1s ease-in-out, transform 360ms cubic-bezier(.2,.7,.2,1), color 260ms ease, filter 360ms ease;
+    }
+    .word {
+      /* keep generic pointer behavior but actual hover animation applied only for Swedish words */
+      cursor: pointer;
+    }
+
+    /* Hover animation only for Swedish words: gently scale and bolden */
+    .sentence[data-lang="swedish"] .word:hover {
+      transform: scale(1.06) translateZ(0);
+      font-weight: 600;
+      color: #fff;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.28));
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    }
+    .visible {
+      opacity: 1;
+    }
+    .separator {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      margin: 20px 0;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    .close-btn:hover {
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .close-btn:active {
+      transform: scale(0.95);
+    }
+    .watermark {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .info-icon {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+    .info-icon:hover {
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    .info-icon:active {
+      transform: scale(0.95);
+    }
+    .info-icon:hover::after {
+      content: "I use this tool to help expand my Swedish vocabulary and to practice pronunciation. I record myself narrating the Swedish and English discussion components, and then I listen back to the recording while I go for runs.\A\A P.S. Click on Swedish words to see their definitions!";
+      position: absolute;
+      top: 30px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      white-space: pre-wrap;
+      display: block;
+      width: min(80vw, 720px);
+      line-height: 1.3;
+      z-index: 101;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .back-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      color: rgba(255,255,255,0.95);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s, color 0.15s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      z-index: 100;
+      text-decoration: none;
+      opacity: 0.96;
+    }
+    .back-btn:hover { background: rgba(0,0,0,0.30); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+    .back-btn:active { transform: scale(0.97); }
+    .refresh-btn {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 300;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-right: 8px;
+    }
+    .refresh-btn:hover { background: rgba(0,0,0,0.33); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    .refresh-btn:active { transform: scale(0.95); }
+    .refresh-btn svg {
+      display: block;
+      width: 18px;
+      height: 18px;
+      margin: 0 auto;
+    }
+    .definition-popup {
+      position: absolute;
+      background: rgba(0,0,0,0.88);
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(6px);
+      width: min(80vw, 380px);
+      z-index: 300;
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 300;
+    }
+    .definition-popup .close {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>The Swedishinator</h1>
+  <div id="input-container">
+    <button id="refresh-btn" class="refresh-btn" title="Random topic" aria-label="Random topic">
+      <svg width="18" height="18" viewBox="0 0 24 24" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M22 13a9 9 0 10-3.16 6.36" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M22 7v6h-6" transform="rotate(20 22 13)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <input type="text" id="topic" placeholder="Enter a topic" />
+    <button id="btn">Generate Discussion</button>
+    <div class="style-options">
+      <span>Tone:</span>
+      <label><input type="radio" name="style" value="formal" checked> Formal</label>
+      <label><input type="radio" name="style" value="casual"> Casual</label>
+      <label class="other-tone"><input type="radio" name="style" value="other"> Other:
+        <input type="text" id="other-tone-input" placeholder="Describe tone (e.g. 'playful, minimal')" disabled />
+      </label>
+    </div>
+  </div>
+  <div id="content" style="display: none;">
+    <div class="loading">
+      <div class="spinner"></div>
+      Generating discussion...
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://long-field-fb6f.britta178.workers.dev/";
+    const WORKER2_URL = "https://weathered-grass-9092.britta178.workers.dev/";
+    const TOPICS_CSV = './topics.csv';
+    let _topicsCache = null;
+    // Fallback topics (same list as topics.csv) used when fetch is unavailable
+    const TOPICS_FALLBACK = [
+      'climate','technology','art','music','science','health','education','economy','politics','travel',
+      'culture','history','literature','philosophy','sports','fashion','design','architecture','photography','cinema',
+      'theater','astronomy','biology','chemistry','physics','environment','agriculture','transportation','energy','finance',
+      'psychology','sociology','language','religion','law','ethics','innovation','startup','business','marketing',
+      'media','journalism','robotics','AI','machinelearning','nanotech','genetics','medicine','nutrition','wellness',
+      'mindfulness','productivity','remotework','urbanism','housing','realestate','gaming','ecommerce','cryptocurrency','blockchain',
+      'privacy','security','privacytech','opensource','hardware','software','coding','programming','webdev','mobile',
+      'automation','logistics','manufacturing','sustainability','recycling','conservation','wildlife','oceans','forests','mountains',
+      'exploration','space','satellites','geopolitics','diplomacy','migration','democracy','voting','educationtech','edtech',
+      'parenting','childcare','aging','retirement','community','volunteering','philanthropy','startups','leadership','management',
+      'strategy','analytics','data','bigdata','quantum','cryptography','wellbeing','happiness','relationships','networking',
+      'negotiation','creativity','innovation','entrepreneurship'
+    ];
+
+    async function loadTopics() {
+      if (_topicsCache) return _topicsCache;
+      try {
+        const res = await fetch(TOPICS_CSV);
+        if (!res.ok) throw new Error('Could not load topics');
+        const txt = await res.text();
+        const arr = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        _topicsCache = Array.from(new Set(arr));
+        return _topicsCache;
+      } catch (err) {
+        console.warn('loadTopics error', err);
+        _topicsCache = TOPICS_FALLBACK.slice();
+        return _topicsCache;
+      }
+      // If the CSV was empty, use fallback
+      if (!_topicsCache || _topicsCache.length === 0) {
+        _topicsCache = TOPICS_FALLBACK.slice();
+      }
+    }
+
+    function pickRandomTopic() {
+      if (!_topicsCache || _topicsCache.length === 0) return '';
+      const i = Math.floor(Math.random() * _topicsCache.length);
+      return _topicsCache[i];
+    }
+
+    // wire refresh button
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTopics();
+      const refreshBtn = document.getElementById('refresh-btn');
+      const topicInput = document.getElementById('topic');
+      if (refreshBtn && topicInput) {
+        refreshBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const topics = await loadTopics();
+          if (!topics || topics.length === 0) return;
+          topicInput.value = pickRandomTopic();
+          topicInput.focus();
+          topicInput.select();
+        });
+      }
+      const backBtn = document.getElementById('back-btn');
+      if (backBtn) {
+        backBtn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          try { history.back(); } catch (e) { window.location.href = 'index.html'; }
+        });
+      }
+    });
+
+    function generateDiscussion() {
+      const topic = document.getElementById("topic").value.trim();
+      if (!topic) {
+        alert("Please enter a topic.");
+        return;
+      }
+        const style = document.querySelector('input[name="style"]:checked')?.value || 'formal';
+        const otherToneInput = document.getElementById('other-tone-input');
+        const toneValue = (style === 'other' && otherToneInput) ? otherToneInput.value.trim() : '';
+        const url = `${WORKER_URL}?topic=${encodeURIComponent(topic)}&style=${encodeURIComponent(style)}&tone=${encodeURIComponent(toneValue)}`;
+      
+      // Show loading
+      document.getElementById("input-container").style.display = "none";
+      const content = document.getElementById("content");
+      content.style.display = "block";
+      content.innerHTML = '<div class="loading"><div class="spinner"></div>Generating discussion...</div>';
+      
+      fetch(url)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.text();
+        })
+        .then(text => {
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            alert(`Raw AI response: ${text}`);
+            return;
+          }
+          displayContent(data.swedish || [], data.english || []);
+        })
+        .catch(error => {
+          alert(`Error: ${error.message}`);
+          // Reset to input
+          document.getElementById("input-container").style.display = "block";
+          content.style.display = "none";
+        });
+    }
+
+    document.getElementById("btn").addEventListener("click", generateDiscussion);
+
+    document.getElementById("topic").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        generateDiscussion();
+      }
+    });
+
+    // Enable/disable the other-tone input based on radio selection
+    document.querySelectorAll('input[name="style"]').forEach(r => {
+      r.addEventListener('change', (e) => {
+        const otherInput = document.getElementById('other-tone-input');
+        if (!otherInput) return;
+        otherInput.disabled = e.target.value !== 'other';
+        if (!otherInput.disabled) otherInput.focus();
+      });
+    });
+
+    function displayContent(swedishParas, englishParas) {
+      const content = document.getElementById("content");
+      content.innerHTML = `
+        <div class="columns">
+          <div class="column">
+            <h2>Svenska</h2>
+          </div>
+          <div class="column">
+            <h2>English</h2>
+          </div>
+        </div>
+      `;
+      
+      // Add close button
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = 'X';
+      closeBtn.className = 'close-btn';
+      closeBtn.onclick = () => {
+        document.getElementById("input-container").style.display = "block";
+        document.getElementById("content").style.display = "none";
+        document.getElementById("topic").value = "";
+      };
+      content.appendChild(closeBtn);
+      
+      // Add paragraph rows
+      const maxParas = Math.max(swedishParas.length, englishParas.length);
+      for (let i = 0; i < maxParas; i++) {
+        const sPara = swedishParas[i] || '';
+        const ePara = englishParas[i] || '';
+
+        // Normalize sentence breaks to include '.', '!' and '?' as sentence endings.
+        // Handle existing <br> markers as well to avoid duplicates.
+        // Ensure the regex consumes the full '<br>' (including closing '>')
+        const normalizePara = (p) => p.replace(/([.!?])(?:\s|<br\s*\/?\s*>)+/g, '$1<br>').replace(/(<br>)+$/,'');
+        const sParaProcessed = normalizePara(sPara);
+        const eParaProcessed = normalizePara(ePara);
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        content.appendChild(row);
+
+        const sDiv = document.createElement('div');
+        sDiv.className = 'paragraph';
+        row.appendChild(sDiv);
+        animateText(sDiv, sParaProcessed, i, 'swedish');
+
+        const eDiv = document.createElement('div');
+        eDiv.className = 'paragraph';
+        row.appendChild(eDiv);
+        animateText(eDiv, eParaProcessed, i, 'english');
+      }
+
+      // Fade in all text at once
+      setTimeout(() => {
+        document.querySelectorAll('.word').forEach(span => span.classList.add('visible'));
+      }, 400);
+
+      // Add hover listeners
+      document.querySelectorAll('.sentence').forEach(sent => {
+        sent.addEventListener('mouseover', (e) => {
+          const {para, sentence, lang} = e.currentTarget.dataset;
+          const otherLang = lang === 'swedish' ? 'english' : 'swedish';
+          const corresponding = document.querySelector(`.sentence[data-para="${para}"][data-sentence="${sentence}"][data-lang="${otherLang}"]`);
+          e.currentTarget.classList.add('highlight');
+          if (corresponding) corresponding.classList.add('highlight');
+        });
+        sent.addEventListener('mouseout', (e) => {
+          const {para, sentence, lang} = e.currentTarget.dataset;
+          const otherLang = lang === 'swedish' ? 'english' : 'swedish';
+          const corresponding = document.querySelector(`.sentence[data-para="${para}"][data-sentence="${sentence}"][data-lang="${otherLang}"]`);
+          e.currentTarget.classList.remove('highlight');
+          if (corresponding) corresponding.classList.remove('highlight');
+        });
+      });
+
+      // Click handler for Swedish words (delegated)
+      const contentEl = document.getElementById('content');
+      let popupEl = null;
+
+      function removePopup() {
+        if (popupEl) {
+          popupEl.remove();
+          popupEl = null;
+        }
+      }
+
+      // Click outside to close
+      document.addEventListener('click', (ev) => {
+        if (!popupEl) return;
+        if (ev.target.closest('.definition-popup')) return;
+        if (ev.target.classList && ev.target.classList.contains('word')) return;
+        removePopup();
+      });
+
+      contentEl.addEventListener('click', async (ev) => {
+        const t = ev.target;
+        if (!(t && t.classList && t.classList.contains('word'))) return;
+        const sentence = t.closest('.sentence');
+        if (!sentence || sentence.dataset.lang !== 'swedish') return;
+
+        const rawWord = t.textContent || '';
+        const word = rawWord.replace(/[^\p{L}ÅÄÖåäö\-]/gu, '').trim();
+        if (!word) return;
+
+        // show loading popup
+        removePopup();
+        popupEl = document.createElement('div');
+        popupEl.className = 'definition-popup';
+        popupEl.innerHTML = `<div class="close">✕</div><div class="def-body">Loading definition for <strong>${escapeHtml(word)}</strong>…</div>`;
+        document.body.appendChild(popupEl);
+
+        // position popup near clicked word
+        const rect = t.getBoundingClientRect();
+        const left = Math.min(window.innerWidth - 20 - 360, Math.max(8, rect.left));
+        popupEl.style.top = (rect.bottom + 8 + window.scrollY) + 'px';
+        popupEl.style.left = (left + window.scrollX) + 'px';
+
+        popupEl.querySelector('.close').addEventListener('click', removePopup);
+
+        try {
+          const res = await fetch(`${WORKER2_URL}?word=${encodeURIComponent(word)}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const bodyHtml = `
+            <div class="def-word"><strong>${escapeHtml(word)}</strong></div>
+            <div class="def-text">${escapeHtml(data.definition || 'No definition found.')}</div>
+            <div class="def-example" style="margin-top:8px;color:rgba(255,255,255,0.88)"><em>${escapeHtml(data.example_swedish || '')}</em>
+            <div style="opacity:0.8;margin-top:6px">${escapeHtml(data.example_english || '')}</div></div>`;
+          popupEl.querySelector('.def-body').innerHTML = bodyHtml;
+        } catch (err) {
+          popupEl.querySelector('.def-body').textContent = `Error: ${err.message}`;
+        }
+      });
+    }
+
+    function animateText(container, text, paraIndex, lang) {
+      const sentences = text.split('<br>');
+      sentences.forEach((sentence, sIndex) => {
+        if (sentence.trim() === '') return;
+        const sentenceDiv = document.createElement('div');
+        sentenceDiv.className = 'sentence';
+        sentenceDiv.dataset.para = paraIndex;
+        sentenceDiv.dataset.sentence = sIndex;
+        sentenceDiv.dataset.lang = lang;
+        container.appendChild(sentenceDiv);
+        const words = sentence.trim().split(/\s+/);
+        words.forEach((word, wIndex) => {
+          const span = document.createElement('span');
+          span.className = 'word';
+          span.textContent = word;
+          sentenceDiv.appendChild(span);
+        });
+      });
+    }
+
+    // Small helper to escape HTML for insertion into popup
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+  <div class="watermark">Photo by Felix Rottmann on Unsplash</div>
+  <button id="back-btn" class="back-btn" title="Back" aria-label="Back">❮</button>
+  <div class="info-icon">i</div>
+</body>
+</html>
