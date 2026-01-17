@@ -11,8 +11,8 @@
       margin: 0;
       padding: 0;
       position: relative;
-      /* subtle dark gradient as a safe fallback when the image is missing */
-      background: linear-gradient(135deg, #071026 0%, #0b1230 100%);
+      /* use pure black so blurred image doesn't reveal an underlying color */
+      background: #000000;
       color-scheme: dark;
       height: 100%;
     }
@@ -31,7 +31,7 @@
     }
     /* Fallback styling applied when the image fails to load */
     .bg-wrap.bg-fallback {
-      background: linear-gradient(135deg, #0a1628 0%, #06111f 100%);
+      background: #000000;
     }
     .bg-wrap .bg-img {
       position: absolute;
