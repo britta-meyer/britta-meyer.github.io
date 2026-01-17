@@ -22,6 +22,20 @@
       filter: blur(60px);
       z-index: -1;
     }
+
+    /* Mobile: disable fixed attachment (causes issues), and slightly scale the background so
+       the blurred image fills the viewport without changing aspect ratio */
+    @media (max-width: 768px) {
+      html::before {
+        background-attachment: scroll;
+        background-position: center center;
+        background-size: cover;
+        transform-origin: center center;
+        transform: scale(1.16);
+        filter: blur(66px);
+        will-change: transform;
+      }
+    }
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
