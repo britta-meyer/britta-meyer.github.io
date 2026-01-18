@@ -28,7 +28,8 @@
       pointer-events: none;
       overflow: hidden;
       display: block;
-      background: transparent;
+      /* ensure there's always a solid black backing behind the image */
+      background: #000000;
     }
     /* Fallback styling applied when the image fails to load */
     .bg-wrap.bg-fallback {
@@ -78,6 +79,22 @@
 
       /* reduce background blur on small screens for performance and sharper look */
       .bg-wrap .bg-img { filter: blur(40px) !important; transform: scale(1.12) !important; }
+
+      /* force full-coverage background on small devices (cover safe areas and notches)
+         expand the image beyond the viewport by the safe-area insets so no gaps appear */
+      .bg-wrap { background: #000000; }
+      .bg-wrap .bg-img {
+        position: fixed !important;
+        top: calc(-1 * env(safe-area-inset-top, 0px));
+        left: calc(-1 * env(safe-area-inset-left, 0px));
+        right: calc(-1 * env(safe-area-inset-right, 0px));
+        bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+        width: calc(100vw + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
+        height: calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+        object-fit: cover;
+        object-position: center center;
+        transform: none !important;
+      }
 
       /* reduce global body padding while still respecting safe-area */
       body { padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left)); }
