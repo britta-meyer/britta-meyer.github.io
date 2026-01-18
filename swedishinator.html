@@ -49,14 +49,16 @@
 
     /* small-screen / iPhone specific UI shrink and fade overlays */
     @media (max-width: 420px), (max-device-width: 812px) {
-      /* slightly smaller typography and tighter spacing on phones */
-      html { font-size: 14px; }
-      h1 { font-size: 1.5rem; margin-bottom: 18px; }
-      #input-container { padding: 14px; margin-bottom: 24px; }
-      #topic { width: 220px; padding: 10px 12px; font-size: 15px; }
-      #btn { padding: 10px 16px; font-size: 14px; }
-      .paragraph { padding: 12px; font-size: 15px; }
-      .columns { gap: 12px; }
+      /* stronger downscale for phones: smaller typography and tighter spacing */
+      html { font-size: 13px; }
+      h1 { font-size: 1.25rem; margin-bottom: 12px; }
+      #input-container { padding: 12px; margin-bottom: 18px; }
+      #topic { width: 180px; padding: 8px 10px; font-size: 14px; }
+      #btn { padding: 8px 12px; font-size: 13px; }
+      .paragraph { padding: 10px; font-size: 14px; }
+      .columns { gap: 8px; }
+      .watermark { font-size: 11px; }
+      .info-icon, .back-btn, .refresh-btn { width: 30px; height: 30px; font-size: 14px; }
 
       /* reduce background blur on small screens for performance and sharper look */
       .bg-wrap { filter: none !important; }
