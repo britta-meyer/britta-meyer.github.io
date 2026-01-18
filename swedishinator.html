@@ -64,6 +64,24 @@
       /* ensure the viewport fits the page without accidental scrollbars */
       body { padding-top: 18px; padding-bottom: 18px; }
     }
+
+    /* small-screen / iPhone specific UI shrink and fade overlays */
+    @media (max-width: 420px), (max-device-width: 812px) {
+      /* slightly smaller typography and tighter spacing on phones */
+      html { font-size: 14px; }
+      h1 { font-size: 1.5rem; margin-bottom: 18px; }
+      #input-container { padding: 14px; margin-bottom: 24px; }
+      #topic { width: 220px; padding: 10px 12px; font-size: 15px; }
+      #btn { padding: 10px 16px; font-size: 14px; }
+      .paragraph { padding: 12px; font-size: 15px; }
+      .columns { gap: 12px; }
+
+      /* reduce background blur on small screens for performance and sharper look */
+      .bg-wrap .bg-img { filter: blur(40px) !important; transform: scale(1.12) !important; }
+
+      /* reduce global body padding while still respecting safe-area */
+      body { padding: calc(12px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left)); }
+    }
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
@@ -462,12 +480,33 @@
       cursor: pointer;
       opacity: 0.8;
     }
+
+    /* Fade overlays: hidden on desktop, enabled only on small touch devices supporting safe-area insets */
+    .bg-fade { display: none; pointer-events: none; }
+
+    @media (max-width: 420px) and (hover: none) and (pointer: coarse) {
+      @supports (env(safe-area-inset-top)) {
+        .bg-fade { display: block; position: fixed; left: 0; right: 0; pointer-events: none; z-index: 9999; }
+        .bg-fade.top {
+          top: 0;
+          height: calc(env(safe-area-inset-top, 0px) + 72px);
+          background: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 60%);
+        }
+        .bg-fade.bottom {
+          bottom: 0;
+          height: calc(env(safe-area-inset-bottom, 0px) + 72px);
+          background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 60%);
+        }
+      }
+    }
   </style>
 </head>
 <body>
   <div class="bg-wrap" aria-hidden="true">
     <img class="bg-img" src="felix-rottmann-ADGPyb9jJKE-unsplash.jpg" alt="" loading="eager" decoding="async" onerror="this.style.display='none';this.parentElement.classList.add('bg-fallback')" />
   </div>
+  <div class="bg-fade top" aria-hidden="true"></div>
+  <div class="bg-fade bottom" aria-hidden="true"></div>
   <h1>The Swedishinator</h1>
   <div id="input-container">
     <button id="refresh-btn" class="refresh-btn" title="Random topic" aria-label="Random topic">
