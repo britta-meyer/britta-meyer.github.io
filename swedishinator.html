@@ -83,14 +83,18 @@
       /* force full-coverage background on small devices (cover safe areas and notches)
          expand the image beyond the viewport by the safe-area insets so no gaps appear */
       .bg-wrap { background: #000000; }
+      /* extend background further beyond safe areas to avoid any visible gaps */
+      :root { --bg-extra: 48px; }
       .bg-wrap .bg-img {
         position: fixed !important;
-        top: calc(-1 * env(safe-area-inset-top, 0px));
-        left: calc(-1 * env(safe-area-inset-left, 0px));
-        right: calc(-1 * env(safe-area-inset-right, 0px));
-        bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
-        width: calc(100vw + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
-        height: calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+        /* push edges further out than the safe-area insets */
+        top: calc(-1 * (env(safe-area-inset-top, 0px) + var(--bg-extra)));
+        bottom: calc(-1 * (env(safe-area-inset-bottom, 0px) + var(--bg-extra)));
+        left: calc(-1 * (env(safe-area-inset-left, 0px) + var(--bg-extra)));
+        right: calc(-1 * (env(safe-area-inset-right, 0px) + var(--bg-extra)));
+        /* let left/right/top/bottom drive the sizing so the image fully covers */
+        width: auto;
+        height: auto;
         object-fit: cover;
         object-position: center center;
         transform: none !important;
